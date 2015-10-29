@@ -7,7 +7,6 @@ a {
 }
 
 .barchart {
-  height: 600px;
   font-size: 10px;
 
   td {
@@ -22,4 +21,8 @@ a {
 
   .increase { background-color: red; }
   .total { background-color: green; }
+}
+
+.bracket {
+  float: left;
 }

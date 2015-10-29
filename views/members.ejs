@@ -5,6 +5,20 @@
     <link rel="stylesheet" href="/oredev-kodapor.css" />
   </head>
   <body>
+    <div class="barchart">
+      <div class="barchart__chart">
+        <% members.forEach(function (member) { %>
+        <div class="bar increase" style="height: <%=member.pIncrease%>%">
+          <%=member.increase%>
+        </div>
+        <%});%>
+      </div>
+      <div class="barchart__x">
+        <% members.forEach(function (member) { %>
+          
+        <%});%>
+      </div>
+    </div>
     <table class="barchart">
       <tr>
         <% members.forEach(function (member) { %>

@@ -47,56 +47,42 @@ function members() {
     });
 }
 
-function topActive() {
-  return r.connect(config)
+function topActive(by) {
+  var query = r.table('members')
+    .filter(function (m) {
+      return m.hasFields('appId');
+    });
+  if(!by) {
+    query = query
+      .merge(function (m) {
+        return {
+          score: r.expr([m('posts'), m('comments').mul(0.5), m('likes').mul(0.1)]).sum()
+        };
+      });
+  }
+  query = query.orderBy(r.desc(by || 'score'))
+    .limit(10);
+
+  return connect()
     .then(function (conn) {
-      return r.table('members')
-        .filter(function (m) {
-          return m.hasFields('appId');
-        })
-        .merge(function (m) {
-          return {
-            posts: r.db('kodapor').table('posts').getAll(m('appId'), {index: 'fromId'}).count(),
-            comments: r.db('kodapor').table('comments').getAll(m('appId'), {index: 'fromId'}).count(),
-            likes: r.db('kodapor').table('likes').getAll(m('appId'), {index: 'user_id'}).count()
-          };
-        })
-        .merge(function (m) {
-          return {
-            score: r.expr([m('posts'), m('comments').mul(0.3), m('likes').mul(0.1)]).sum()
-          };
-        })
-        .orderBy(r.desc('score'))
-        .limit(20);
+      return query.run(conn);
     });
 }
 
-function topLikers() {
-  return r.connect(config)
+function inactive() {
+  return connect()
     .then(function (conn) {
       return r.table('members')
         .filter(function (m) {
-          return m.hasFields('appId');
+          return r.expr([m('posts'), m('comments'), m('likes')]).sum().eq(0)
         })
-        .merge(function (m) {
-          return {
-            posts: r.db('kodapor').table('posts').getAll(m('appId'), {index: 'fromId'}).count(),
-            comments: r.db('kodapor').table('comments').getAll(m('appId'), {index: 'fromId'}).count(),
-            likes: r.db('kodapor').table('likes').getAll(m('appId'), {index: 'user_id'}).count()
-          };
-        })
-        .merge(function (m) {
-          return {
-            score: r.expr([m('posts'), m('comments').mul(0.3), m('likes').mul(0.1)]).sum()
-          };
-        })
-        .orderBy(r.desc('likes'))
-        .limit(20);
+        .count()
+        .run(conn);
     });
 }
 
 module.exports = {
   members: members,
   topActive: topActive,
-  topLikers: topLikers
+  inactive: inactive
 };
