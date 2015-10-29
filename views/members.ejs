@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/oredev-kodapor.css" />
+  </head>
+  <body>
+    <table class="barchart">
+      <tr>
+        <% members.forEach(function (member) { %>
+        <td style="height: 600px;">
+          <div class="bar increase" style="height: <%=member.pIncrease%>%">
+            <%=member.increase%>
+          </div>
+        </td>
+        <td>
+          <div class="bar total" style="height: <%=member.pTotal%>%">
+            <%=member.total%>
+          </div>
+        </td>
+        <% }) %>
+      </tr>
+      <tr>
+        <% members.forEach(function (member) { %>
+        <td colspan="2">
+          <%=member.year%>-<%=member.month%>
+        </td>
+        <% }) %>
+      </tr>
+    </table>
+  </body>
+</html>

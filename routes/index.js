@@ -1,33 +1,26 @@
-var express = require('express');
-var router = express.Router();
-var r = require('rethinkdb');
-var config = {db:'kodapor'};
+var express = require('express'),
+  router = express.Router(),
+  r = require('rethinkdb'),
+  queries = require('../services/queries');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
-function topEngagement() {
-  return r.connect(config)
-    .then(function (conn) {
-      return r.table('posts')
-        .merge(function(post) {
-          return {
-            comments: r.table('comments')
-              .getAll(post('id'), {index: 'post_id'}).count()
-          };
-        })
-        .orderBy(r.desc('comments'))
-        .limit(10)
-        .run(conn);
-    });
-}
+router.get('/members', function(req, res, next) {
+  queries.members()
+    .then(function (members) {
+      res.render('members', {title: 'Earliest members', members: members });
+    })
+    .catch(next);  
+});
 
-router.get('/1', function(req, res, next) {
-  topEngagement()
-    .then(function (data) {
-      res.render('1', { title: 'Top posts', data: data });
+router.get('/active', function(req, res, next) {
+  Promise.all([queries.topActive(), queries.topLikers()])
+    .spread()
+    .then(function (active, likers) {
+      res.render('active', {title: 'Earliest members', active: active, likers: likers});
     })
     .catch(next);  
 });

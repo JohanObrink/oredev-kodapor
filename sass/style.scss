@@ -5,3 +5,21 @@ body {
 a {
   color: #00B7FF;
 }
+
+.barchart {
+  height: 600px;
+  font-size: 10px;
+
+  td {
+    vertical-align: bottom;
+    width: 50px;
+  }
+
+  .bar {
+    position: relative;
+    width: 100%;
+  }
+
+  .increase { background-color: red; }
+  .total { background-color: green; }
+}

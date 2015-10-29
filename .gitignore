@@ -28,3 +28,6 @@ node_modules
 bower_files
 public/js
 public/css
+public/maps
+public/*.js
+public/*.css
