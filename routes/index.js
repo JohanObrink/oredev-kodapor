@@ -16,6 +16,14 @@ router.get('/members', function(req, res, next) {
     .catch(next);  
 });
 
+router.get('/first', function(req, res, next) {
+  queries.first()
+    .then(function (members) {
+      res.render('first', {title: 'First members', members: members });
+    })
+    .catch(next);  
+});
+
 router.get('/active', function(req, res, next) {
   Promise.all([
       queries.topActive(),

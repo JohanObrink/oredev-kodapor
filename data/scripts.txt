@@ -1,0 +1,13 @@
+Update posts, comments, likes
+
+r.db('kodapor')
+  .table('members')
+  .forEach(function (m) {
+    return r.db('kodapor').table('members')
+      .get(m('id'))
+      .update({
+        posts: r.db('kodapor').table('posts').getAll(m('appId'), {index: 'fromId'}).count(),
+        comments: r.db('kodapor').table('comments').getAll(m('appId'), {index: 'fromId'}).count(),
+        likes: r.db('kodapor').table('likes').getAll(m('appId'), {index: 'user_id'}).count()
+      });
+  })

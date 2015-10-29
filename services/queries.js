@@ -47,6 +47,16 @@ function members() {
     });
 }
 
+function first() {
+  return connect()
+    .then(function (conn) {
+      return r.table('members')
+        .orderBy('joined')
+        .limit(10)
+        .run(conn);
+    });
+}
+
 function topActive(by) {
   var query = r.table('members')
     .filter(function (m) {
@@ -82,6 +92,7 @@ function inactive() {
 }
 
 module.exports = {
+  first: first,
   members: members,
   topActive: topActive,
   inactive: inactive
