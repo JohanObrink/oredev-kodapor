@@ -15,6 +15,7 @@
     "morgan": "~1.6.1",
     "node-sass-middleware": "0.8.0",
     "request": "^2.65.0",
+    "rethinkdb": "^2.1.1",
     "serve-favicon": "~2.3.0"
   },
   "devDependencies": {
