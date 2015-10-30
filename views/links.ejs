@@ -12,8 +12,11 @@
       <ol>
       <%links.forEach(function (link) {%>
         <li>
-          <h4><%=link.summary.title%></h4>
+          <%if(link.summary.title) {%>
+            <h4><%=link.summary.title%></h4>
+          <%}%>
           <img src="<%=link.summary.img%>" />
+          <p><%=link.summary.description%></p>
           <%=link.link%>: <%=link.count%>
         </li>
       <%})%>
@@ -25,8 +28,11 @@
       <ol>
       <%domains.forEach(function (link) {%>
         <li>
-          <h4><%=link.summary.title%></h4>
+          <%if(link.summary.title) {%>
+            <h4><%=link.summary.title%></h4>
+          <%}%>
           <img src="<%=link.summary.img%>" />
+          <p><%=link.summary.description%></p>
           <%=link.link%>: <%=link.count%>
         </li>
       <%})%>
@@ -38,8 +44,11 @@
       <ol>
       <%likedLinks.forEach(function (link) {%>
         <li>
-          <h4><%=link.summary.title%></h4>
+          <%if(link.summary.title) {%>
+            <h4><%=link.summary.title%></h4>
+          <%}%>
           <img src="<%=link.summary.img%>" />
+          <p><%=link.summary.description%></p>
           <%=link.link%>: <%=link.count%>
         </li>
       <%})%>
@@ -51,8 +60,11 @@
       <ol>
       <%likedDomains.forEach(function (link) {%>
         <li>
-          <h4><%=link.summary.title%></h4>
+          <%if(link.summary.title) {%>
+            <h4><%=link.summary.title%></h4>
+          <%}%>
           <img src="<%=link.summary.img%>" />
+          <p><%=link.summary.description%></p>
           <%=link.link%>: <%=link.count%>
         </li>
       <%})%>

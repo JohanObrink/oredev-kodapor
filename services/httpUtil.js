@@ -30,6 +30,12 @@ function loadSummary(link) {
           link.summary.title = $('title').text();
           if(url.indexOf('facebook') > -1 && url.indexOf('photo') > -1) {
             link.summary.img = $('img#fbPhotoImage').attr('src');
+            link.summary.description = $('.hasCaption').text();
+          } else if($('[property="og:image"]')) {
+            link.summary.img = $('[property="og:image"]').attr('content');
+            link.summary.description = $('[property="og:description"]').attr('content');
+          } else {
+            link.summary.description = $('[name="description"]').attr('content');
           }
         }
         delete promises[url];
