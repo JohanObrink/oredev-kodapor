@@ -5,7 +5,7 @@ var gulp = require('gulp'),
   sourcemaps = require('gulp-sourcemaps');
 
 gulp.task('sass', function () {
-  return gulp.src('sass/**/*.scss')
+  return gulp.src(['bower_components/nvd3/build/nv.d3.css', 'sass/**/*.scss'])
     .pipe(sourcemaps.init())
     .pipe(concat('oredev-kodapor.css'))
     .pipe(sass())
@@ -14,7 +14,7 @@ gulp.task('sass', function () {
 });
 
 gulp.task('concat', function () {
-  return gulp.src('src/**/*.js')
+  return gulp.src(['bower_components/d3/d3.js', 'bower_components/nvd3/build/nv.d3.js', 'src/**/*.js'])
     .pipe(sourcemaps.init())
     .pipe(concat('oredev-kodapor.js'))
     .pipe(sourcemaps.write('maps'))

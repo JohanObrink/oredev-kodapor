@@ -11,7 +11,7 @@ router.get('/', function(req, res, next) {
 router.get('/members', function(req, res, next) {
   queries.members()
     .then(function (members) {
-      res.render('members', {title: 'Members development', members: members });
+      res.render('members', {title: 'Members', members: members });
     })
     .catch(next);  
 });

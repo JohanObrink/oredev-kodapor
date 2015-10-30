@@ -5,42 +5,32 @@
     <link rel="stylesheet" href="/oredev-kodapor.css" />
   </head>
   <body>
-    <div class="barchart">
-      <div class="barchart__chart">
-        <% members.forEach(function (member) { %>
-        <div class="bar increase" style="height: <%=member.pIncrease%>%">
-          <%=member.increase%>
-        </div>
-        <%});%>
-      </div>
-      <div class="barchart__x">
-        <% members.forEach(function (member) { %>
-          
-        <%});%>
-      </div>
-    </div>
-    <table class="barchart">
-      <tr>
-        <% members.forEach(function (member) { %>
-        <td style="height: 600px;">
-          <div class="bar increase" style="height: <%=member.pIncrease%>%">
-            <%=member.increase%>
-          </div>
-        </td>
-        <td>
-          <div class="bar total" style="height: <%=member.pTotal%>%">
-            <%=member.total%>
-          </div>
-        </td>
-        <% }) %>
-      </tr>
-      <tr>
-        <% members.forEach(function (member) { %>
-        <td colspan="2">
-          <%=member.year%>-<%=member.month%>
-        </td>
-        <% }) %>
-      </tr>
-    </table>
+    <h1><%=title%></h1>
+    <div id="chart"><svg /></div>
+    <script src="oredev-kodapor.js"></script>
+    <script>
+      barAndLine([
+        {
+          key: 'Growth',
+          bar: true,
+          color: '#ccf',
+          values: [
+            <%members.forEach(function (member) {%>
+              ['<%=member.year+'-'+member.month%>', <%=member.increase%>],
+            <%})%>
+          ]
+        },
+        {
+          key: 'Members',
+          color: '#000',
+          values: [
+            <%members.forEach(function (member) {%>
+              ['<%=member.year+'-'+member.month%>', <%=member.total%>],
+            <%})%>
+          ]
+        }
+      ]);
+    </script>
+    <script 
   </body>
 </html>

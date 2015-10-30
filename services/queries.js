@@ -206,11 +206,11 @@ function topLinks(byDomain, byLikes) {
         return link;
       });
     })
-    .then(function (links) {
+    /*.then(function (links) {
       return Promise.all(links.map(function (link) {
         return httpUtil.loadSummary(link);
       }));
-    });
+    })*/;
 }
 
 module.exports = {
