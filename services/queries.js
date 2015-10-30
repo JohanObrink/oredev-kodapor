@@ -1,4 +1,5 @@
-var r = require('rethinkdb');
+var r = require('rethinkdb'),
+  httpUtil = require('./httpUtil');
 
 function connect() {
   return r.connect({db: 'kodapor'});
@@ -79,6 +80,48 @@ function topActive(by) {
     });
 }
 
+function topLiked(relative, active) {
+  var orderBy = relative ? 'pLikedBy' : 'likedBy';
+  var limit = active ? 200 : 0;
+  return connect()
+    .then(function (conn) {
+      return r.table('members')
+        .filter(function (m) {
+          return r.expr([m('posts'), m('comments')]).sum().gt(limit);
+        })
+        .merge(function (m) {
+          return {
+            likedPosts: r.db('kodapor')
+              .table('posts')
+              .getAll(m('appId'), {index: 'fromId'})
+              .sum('like_count'),
+            likedComments: r.db('kodapor')
+              .table('posts')
+              .getAll(m('appId'), {index: 'fromId'})
+              .sum('comment_like_count')
+          };
+        })
+        .merge(function (m) {
+          return {
+            likedBy: r.expr([m('likedPosts'), m('likedComments')]).sum(),
+            pLikedPosts: r.branch(m('posts').gt(0), m('likedPosts').div(m('posts')), 0),
+            pLikedComments: r.branch(m('comments').gt(0), m('likedComments').div(m('comments')), 0),
+            pLikedBy: r.expr([m('likedPosts'), m('likedComments')]).sum()
+              .div(r.expr([m('posts'), m('comments')]).sum())
+          };
+        })
+        .orderBy(r.desc(orderBy))
+        .limit(20)
+        .run(conn)
+        .map(function (member) {
+          member.pLikedPosts = Math.round(100 * member.pLikedPosts);
+          member.pLikedComments = Math.round(100 * member.pLikedComments);
+          member.pLikedBy = Math.round(100 * member.pLikedBy);
+          return member;
+        });
+    });
+}
+
 function inactive() {
   return connect()
     .then(function (conn) {
@@ -91,9 +134,91 @@ function inactive() {
     });
 }
 
+function companies(active) {
+  return connect()
+    .then(function (conn) {
+      var query = r.table('members');
+      if(active) {
+        query = query
+          .filter(function (m) {
+            return r.expr([m('posts'), m('comments'), m('likes')]).sum().gt(0);
+          });
+      }
+      query = query
+        .group('company')
+        .count()
+        .ungroup()
+        .orderBy(r.desc('reduction'))
+        .limit(20);
+      return query.run(conn)
+        .then(function (groups) {
+          return groups.map(function (g) {
+            return {
+              name: g.group || '-',
+              members: g.reduction
+            };
+          });
+        });
+    });
+}
+
+function topLinks(byDomain, byLikes) {
+  var query = r.table('posts')
+    .filter(function (p) {
+      return p.hasFields('link')
+    });
+
+  if(byDomain) {
+    query = query.merge(function (p) {
+      return {
+        domain: p('link').split('/').slice(0,3).toJsonString()
+      }
+    });
+  }
+  
+  query = query
+    .group(byDomain ? 'domain' : 'link');
+  
+  if(byLikes) {
+    query = query.sum('like_count');
+  } else {
+    query = query.count();
+  }
+
+  query = query
+    .ungroup()
+    .orderBy(r.desc('reduction'))
+    .limit(10)
+    .map(function (g) {
+      return {
+        link: g('group'),
+        count: g('reduction')
+      }
+    });
+
+  return connect()
+    .then(function (conn) {
+      return query.run(conn);
+    })
+    .then(function (links) {
+      return links.map(function (link) {
+        link.link = link.link.replace(/[\[\"\]]/g, '').replace(':,,', '://');
+        return link;
+      });
+    })
+    .then(function (links) {
+      return Promise.all(links.map(function (link) {
+        return httpUtil.loadSummary(link);
+      }));
+    });
+}
+
 module.exports = {
   first: first,
   members: members,
   topActive: topActive,
-  inactive: inactive
+  topLiked: topLiked,
+  inactive: inactive,
+  companies: companies,
+  topLinks: topLinks
 };

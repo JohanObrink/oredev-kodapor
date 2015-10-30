@@ -11,3 +11,27 @@ r.db('kodapor')
         likes: r.db('kodapor').table('likes').getAll(m('appId'), {index: 'user_id'}).count()
       });
   })
+
+
+  Set like_count and comment_count on posts
+
+  r.db('kodapor')
+    .table('posts')
+    .filter(function (p) {
+      return p.hasFields('comment_count').not();
+    })
+    .forEach(function (p) {
+      return r.db('kodapor').table('posts').get(p('id')).update({
+        comment_count: r.db('kodapor').table('comments')
+          .getAll(p('id'), {index: 'post_id'})
+          .count(),
+        like_count: r.db('kodapor').table('likes')
+          .getAll(p('id'), {index: 'post_id'})
+          .filter(function (l) { return l('comment_id').eq(null); })
+          .count(),
+        comment_like_count: r.db('kodapor').table('likes')
+          .getAll(p('id'), {index: 'post_id'})
+          .filter(function (l) { return l('comment_id').eq(null).not(); })
+          .count()
+      }, {nonAtomic: true});
+    });
